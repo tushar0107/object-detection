@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
 import time
+import random
 
 # Load the YOLO model
-net = cv2.dnn.readNet('yolov3_training_last.weights','yolov3_testing.cfg')
+net = cv2.dnn.readNet('yolov3_training.weights','yolov3_testing.cfg')
 # net = cv2.dnn.readNet('yolov3.weights','yolov3_testing.cfg')
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 classes = []
@@ -17,10 +18,12 @@ output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # Load webcam or video
-cap = cv2.VideoCapture('vid3.mp4')
+cap = cv2.VideoCapture('vid1.mp4')
 font = cv2.FONT_HERSHEY_SIMPLEX
 starting_time = time.time()
 frame_id = 0
+colors = [(0,255,255),(255,0,255),(255,255,0),(255,255,155),(155,255,155),(155,255,255),(10,2255,200)]
+color = random.choice(colors)
 
 while True:
     # Read webcam
@@ -62,9 +65,9 @@ while True:
             x, y, w, h = boxes[i]
             label = str(classes[class_ids[i]])
             confidence = confidences[i]
-            color = colors[class_ids[i]]
-            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-            cv2.putText(frame, label + " " + str(round(confidence, 2)), (x, y + 30), font, 1/2, color, 2)
+            percent = str(round(confidence, 2)*100) + "%"
+            cv2.rectangle(frame, (x-15, y-15), (x + w+15, y + h+15), color, 2)
+            cv2.putText(frame, label + " " + percent, (x, y-5), font, 1/2, color, 2)
 
     elapsed_time = time.time() - starting_time
     fps = frame_id / elapsed_time
@@ -73,8 +76,7 @@ while True:
     cv2.imshow("Image", frame)
     key = cv2.waitKey(1)
     if key == 27:
-        print("[button pressed] ///// [esc].")
-        print("[feedback] ///// Videocapturing succesfully stopped")
+        print("Videocapturing stopped")
         break
 
 cap.release()
