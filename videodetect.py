@@ -4,8 +4,7 @@ import time
 import random
 
 # Load the YOLO model
-net = cv2.dnn.readNet('yolov3_training.weights','yolov3_testing.cfg')
-# net = cv2.dnn.readNet('yolov3.weights','yolov3_testing.cfg')
+net = cv2.dnn.readNet('yolov3_training_last.weights','yolov3_testing.cfg')
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 classes = []
 with open("coco.names", "r") as f:
@@ -14,11 +13,11 @@ with open("coco.names", "r") as f:
 #get layers of the network
 layer_names = net.getLayerNames()
 #Determine the output layer names from the YOLO model
-output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
-colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
-# Load webcam or video
-cap = cv2.VideoCapture('vid1.mp4')
+output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
+
+# Loading webcam or video
+cap = cv2.VideoCapture("cars.mp4")
 font = cv2.FONT_HERSHEY_SIMPLEX
 starting_time = time.time()
 frame_id = 0
@@ -26,18 +25,15 @@ colors = [(0,255,255),(255,0,255),(255,255,0),(255,255,155),(155,255,155),(155,2
 color = random.choice(colors)
 
 while True:
-    # Read webcam
     _, frame = cap.read()
     frame_id += 1
     height, width, channels = frame.shape
 
-    # Detecting objects
     blob = cv2.dnn.blobFromImage(frame, 1/255, (416, 416), (0, 0, 0), swapRB=True, crop=False)
     
     net.setInput(blob)
     outs = net.forward(output_layers)
 
-    # Visualising data
     class_ids = []
     confidences = []
     boxes = []
@@ -47,12 +43,11 @@ while True:
             class_id = np.argmax(scores)
             confidence = scores[class_id]
             if confidence > 0.1:
-                # Object detected
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
                 w = int(detection[2] * width)
                 h = int(detection[3] * height)
-                # Rectangle coordinates
+
                 x = int(center_x - w / 2)
                 y = int(center_y - h / 2)
                 boxes.append([x, y, w, h])
