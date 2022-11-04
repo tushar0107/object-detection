@@ -4,7 +4,7 @@ import random
 
 # Load Yolo
 print("LOADING YOLO")
-net = cv2.dnn.readNet("yolov3_training.weights", "yolov3_testing.cfg")
+net = cv2.dnn.readNet("yolov3_training_last.weights", "yolov3_testing.cfg")
 
 #save all the names in file o the list classes
 classes = []
@@ -19,8 +19,8 @@ output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 print("YOLO LOADED")
 
 # Capture frame-by-frame
-img = cv2.imread("img7.jpeg")
-img = cv2.resize(img, None, fx=1, fy=1)
+img = cv2.imread("cat.jpeg")
+img = cv2.resize(img, None, fx=.5, fy=.5)
 cv2.imshow("Image",img)
 cv2.waitKey(2000)
 
@@ -63,7 +63,7 @@ for i in range(len(boxes)):
         color = random.choice(colors)
         label = str(classes[class_ids[i]])
         confidence = confidences[i]
-        percent = str(round(confidence, 2)*100) + "%"
+        percent = str(confidence*100)[0:4]
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         cv2.putText(img, label + " " + percent, (x, y-5),cv2.FONT_HERSHEY_SIMPLEX,1/2, color, 2)
         print(label, percent)
