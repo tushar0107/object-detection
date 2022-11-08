@@ -64,8 +64,6 @@ def gen_frames():
             if i in indexes:
                 x, y, w, h = boxes[i]
                 label = str(classes[class_ids[i]])
-                if label not in objects:
-                    objects.append(label)
                 confidence = confidences[i]
                 percent = str(round(confidence, 2)*100) + "%"
                 cv2.rectangle(frame, (x-15, y-15), (x + w+15, y + h+15), color, 2)
