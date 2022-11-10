@@ -19,6 +19,8 @@ layer_names = net.getLayerNames()
 
 output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
+objects = []
+
 def gen_frames():
     cap = cv2.VideoCapture(0)
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -26,8 +28,6 @@ def gen_frames():
     frame_id = 0
     colors = [(0,255,255),(255,0,255),(255,255,0),(255,255,155),(155,255,155),(155,255,255),(10,2255,200)]
     color = random.choice(colors)
-    detected_object = 'Nothing'
-    objects = []
     while True:
         _, frame = cap.read()
         frame_id += 1
@@ -52,7 +52,6 @@ def gen_frames():
                     center_y = int(detection[1] * height)
                     w = int(detection[2] * width)
                     h = int(detection[3] * height)
-
                     x = int(center_x - w / 2)
                     y = int(center_y - h / 2)
                     boxes.append([x, y, w, h])
@@ -67,7 +66,7 @@ def gen_frames():
                 confidence = confidences[i]
                 percent = str(round(confidence, 2)*100) + "%"
                 cv2.rectangle(frame, (x-15, y-15), (x + w+15, y + h+15), color, 2)
-                cv2.putText(frame, label + " " + percent, (x, y-5), font, 1/2, color, 2)
+                cv2.putText(frame, label + " " + percent, (x, y-5), font, 1/2, color, 1)
 
         elapsed_time = time.time() - starting_time
         fps = frame_id / elapsed_time
@@ -77,7 +76,6 @@ def gen_frames():
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
 
 
 @app.route('/')
